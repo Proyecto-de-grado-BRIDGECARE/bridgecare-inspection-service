@@ -1,0 +1,9 @@
+services:
+  inspection-service:
+    build:
+      context: .
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+
