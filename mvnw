@@ -29,6 +29,21 @@
 #   MVNW_VERBOSE - true: enable verbose log; debug: trace the mvnw script; others: silence the output
 # ----------------------------------------------------------------------------
 
+# Load .env file if it exists
+if [ -f .env ]; then
+    while IFS='=' read -r key value; do
+        # Skip empty lines and comments
+        [[ -z "$key" || "$key" =~ ^# ]] && continue
+        # Remove leading/trailing whitespace
+        key=$(echo "$key" | sed 's/^[ \t]*//;s/[ \t]*$//')
+        value=$(echo "$value" | sed 's/^[ \t]*//;s/[ \t]*$//')
+        # Export as environment variable
+        export "$key=$value"
+    done < .env
+else
+    echo "Warning: .env file not found. Ensure it exists with GITHUB_USERNAME and GITHUB_TOKEN."
+fi
+
 set -euf
 [ "${MVNW_VERBOSE-}" != debug ] || set -x
 
@@ -144,7 +159,8 @@ MAVEN_HOME="${MAVEN_USER_HOME}/wrapper/dists/${distributionUrlNameMain-}/$(hash_
 
 exec_maven() {
   unset MVNW_VERBOSE MVNW_USERNAME MVNW_PASSWORD MVNW_REPOURL || :
-  exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD"
+  # Modified to include -s settings.xml
+  exec "$MAVEN_HOME/bin/$MVN_CMD" -s settings.xml "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD"
 }
 
 if [ -d "$MAVEN_HOME" ]; then
