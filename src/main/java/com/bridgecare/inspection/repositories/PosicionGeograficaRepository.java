@@ -1,8 +1,8 @@
-package com.bridgecare.inventory.repositories;
+package com.bridgecare.inspection.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.bridgecare.inventory.models.entities.PosicionGeografica;
+import com.bridgecare.inspection.models.entities.PosicionGeografica;
 
 public interface PosicionGeograficaRepository extends JpaRepository<PosicionGeografica, Long> {
     

@@ -11,7 +11,7 @@ import io.github.cdimascio.dotenv.Dotenv;
     "com.bridgecare.common.models.entities",
     "com.bridgecare.inspection.models.entities"
 })
-public class inspectionServiceApplication {
+public class InspectionServiceApplication {
 
     static {
         Dotenv dotenv = Dotenv.load();
@@ -22,6 +22,6 @@ public class inspectionServiceApplication {
     }
 
 	public static void main(String[] args) {
-		SpringApplication.run(inspectionServiceApplication.class, args);
+		SpringApplication.run(InspectionServiceApplication.class, args);
 	}
 }
