@@ -11,14 +11,14 @@ import com.bridgecare.inspection.models.dtos.InspeccionDTO;
 import com.bridgecare.inspection.services.InspeccionService;
 
 @RestController
-@RequestMapping("/api/inspection")
+@RequestMapping("/api/inspeccion")
 public class InspeccionController {
     @Autowired
-    private InspeccionService inspectionService;
+    private InspeccionService inspeccionService;
 
     @PostMapping
     public ResponseEntity<String> createInspeccion(@RequestBody InspeccionDTO request) {
-        Long inspectionId = inspectionService.saveInspeccion(request);
-        return ResponseEntity.ok("Inspeccion created with ID: " + inspectionId);
+        Long inspeccionId = inspeccionService.saveInspection(request);
+        return ResponseEntity.ok("Inspeccion created with ID: " + inspeccionId);
     }
 }
