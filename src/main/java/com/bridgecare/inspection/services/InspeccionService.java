@@ -59,6 +59,13 @@ public class InspeccionService {
         Inspeccion inspeccion = new Inspeccion();
         inspeccion.setPuente(puente);
         inspeccion.setTiempo(request.getTiempo());
+        /*
+        inspeccion.setTemperatura(request.getTemperatura());
+        inspeccion.setAdministrador(request.getAdministrador());
+        inspeccion.setAnioProximaInspeccion(request.getAnioProximaInspeccion());
+        inspeccion.setObservacionesGenerales(request.getObservacionesGenerales());
+        inspeccion.setComponente(request.getComponente());
+         */
 
         Usuario usuario = mapUsuarioDTOToUsuario(request.getUsuario());
         inspeccion.setUsuario(usuario);
