@@ -16,7 +16,7 @@ public class InspeccionController {
     @Autowired
     private InspeccionService inspeccionService;
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<String> createInspeccion(@RequestBody InspeccionDTO request) {
         Long inspeccionId = inspeccionService.saveInspection(request);
         return ResponseEntity.ok("Inspeccion created with ID: " + inspeccionId);

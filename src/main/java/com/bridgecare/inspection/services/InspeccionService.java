@@ -9,7 +9,8 @@ import com.bridgecare.inspection.repositories.InspeccionRepository;
 import com.bridgecare.inspection.repositories.ReparacionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.bridgecare.inspection.models.dtos.InspeccionDTO;
@@ -28,47 +29,75 @@ public class InspeccionService {
     @Autowired
     private InspeccionRepository inspeccionRepository;
 
-    @Autowired
-    private ComponenteRepository componenteRepository;
-
-    @Autowired
-    private ReparacionRepository reparacionRepository;
 
     @Transactional
-    public Long saveInspection(InspeccionDTO request){
-        String puenteUrl = "http://puente-service/api/puentes";
-        ResponseEntity<Long> response = restTemplate.postForEntity(puenteUrl, request.getPuente(), Long.class);
-        Long puenteId = response.getBody();
+    public Long saveInspeccion(InspeccionDTO request, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("Unauthorized: No valid token provided");
+        }
 
-        Puente puente = new Puente();
-        puente.setId(puenteId);
-        puente.setNombre(request.getPuente().getNombre());
+        // Extract user ID from JWT
+        String userEmail = extractUserEmailFromAuthentication(authentication);
+        System.out.println("userEmail: " + userEmail);
 
+        // Save Puente via BridgeService
+        String puenteUrl = "http://localhost:8081/api/puentes/add";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + getTokenFromAuthentication(authentication));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Object> entity = new HttpEntity<>(request.getPuente(), headers);
+        ResponseEntity<Puente> response = restTemplate.postForEntity(puenteUrl, entity, Puente.class);
+
+        if (response.getStatusCode() != HttpStatus.CREATED || response.getBody() == null) {
+            throw new IllegalStateException("Failed to create Puente: " + response.getStatusCode());
+        }
+
+        Puente puente = response.getBody();
+
+        // Build Inventario
         Inspeccion inspeccion = new Inspeccion();
         inspeccion.setPuente(puente);
         inspeccion.setTiempo(request.getTiempo());
-        inspeccion.setTemperatura(request.getTemperatura());
-        inspeccion.setAdministrador(request.getAdministrador());
-        inspeccion.setAnioProximaInspeccion(request.getAnioProximaInspeccion());
-        inspeccion.setObservacionesGenerales(request.getObservacionesGenerales());
 
-        Usuario usuario = new Usuario();
-        usuario.setId(request.getUsuario().getId());
+        Usuario usuario = mapUsuarioDTOToUsuario(request.getUsuario());
         inspeccion.setUsuario(usuario);
 
-        if (request.getComponente() != null) {
-            Componente comp = new Componente();
-            comp.setInspeccion(inspeccion);
-            componenteRepository.save(comp);
-            inspeccion.setComponentes((List<Componente>) comp);
-           /*
-            ComponenteDTO componente = request.getComponente().get(0);
-            if (componente.getReparacion() != null) {
-                List<ReparacionDTO> reparaciones = componente.getReparacion();
-            }
-            */
+        return inspeccionRepository.save(inspeccion).getId();
+    }
 
+    private Usuario mapUsuarioDTOToUsuario(UsuarioDTO usuarioDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioDTO.getId());
+        usuario.setNombres(usuarioDTO.getNombres());
+        usuario.setApellidos(usuarioDTO.getApellidos());
+        usuario.setIdentificacion(usuarioDTO.getIdentificacion());
+        usuario.setTipoUsuario(usuarioDTO.getTipoUsuario());
+        usuario.setCorreo(usuarioDTO.getCorreo());
+        usuario.setMunicipio(usuarioDTO.getMunicipio());
+        usuario.setContrasenia(usuarioDTO.getContrasenia());
+
+        return usuario;
+    }
+
+    private String extractUserEmailFromAuthentication(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof String) {
+            String email = (String) authentication.getPrincipal();
+            if (email.contains("@")) { // Optionally validate it's a proper email format
+                return email;
+            } else {
+                throw new IllegalStateException("User email in token is not valid: " + email);
+            }
         }
-        // Falta return
+        throw new IllegalStateException("Unable to extract user email from token");
+    }
+
+    private String getTokenFromAuthentication(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getCredentials() instanceof String) {
+            return (String) authentication.getCredentials();
+        }
+        throw new IllegalStateException("No JWT token found in authentication");
     }
 }
