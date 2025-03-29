@@ -1,11 +1,13 @@
 package com.bridgecare.inspection.models.dtos;
 import lombok.Data;
 
+import java.time.Year;
+
 @Data
 public class ReparacionDTO {
     private String tipo;
     private Integer cantidad;
-    private Integer anio;
+    private Year anio;
     private Integer costo;
 
     public String getTipo() {
@@ -24,11 +26,11 @@ public class ReparacionDTO {
         this.cantidad = cantidad;
     }
 
-    public Integer getAnio() {
+    public Year getAnio() {
         return anio;
     }
 
-    public void setAnio(Integer anio) {
+    public void setAnio(Year anio) {
         this.anio = anio;
     }
 

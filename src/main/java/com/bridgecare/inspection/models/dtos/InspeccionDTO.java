@@ -13,7 +13,7 @@ public class InspeccionDTO {
     private Integer administrador;
     private Integer anioProximaInspeccion;
     private Integer observacionesGenerales;
-    private List<ComponenteDTO> componente;
+    private List<ComponenteDTO> componentes;
     private UsuarioDTO usuario;
     private PuenteDTO puente;
 
@@ -58,12 +58,12 @@ public class InspeccionDTO {
         this.observacionesGenerales = observacionesGenerales;
     }
 
-    public List<ComponenteDTO> getComponente() {
-        return componente;
+    public List<ComponenteDTO> getComponentes() {
+        return componentes;
     }
 
-    public void setComponente(List<ComponenteDTO> componente) {
-        this.componente = componente;
+    public void setComponentes(List<ComponenteDTO> componentes) {
+        this.componentes = componentes;
     }
 
     public UsuarioDTO getUsuario() {
