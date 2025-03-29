@@ -40,7 +40,7 @@ public class InspeccionService {
         String userEmail = extractUserEmailFromAuthentication(authentication);
         System.out.println("userEmail: " + userEmail);
 
-        String puenteUrl = "http://localhost:8081/api/puentes/" + request.getPuenteId();
+        String puenteUrl = "http://localhost:8081/api/puentes/" + request.getPuente().getId();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getTokenFromAuthentication(authentication));
@@ -51,7 +51,7 @@ public class InspeccionService {
         ResponseEntity<Puente> response = restTemplate.exchange(puenteUrl, HttpMethod.GET, entity, Puente.class);
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new IllegalStateException("Failed to find Puente with ID: " + request.getPuenteId());
+            throw new IllegalStateException("Failed to find Puente with ID: " + request.getPuente().getId());
         }
 
         Puente puente = response.getBody();
