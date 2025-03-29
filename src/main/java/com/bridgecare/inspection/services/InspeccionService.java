@@ -3,16 +3,19 @@ package com.bridgecare.inspection.services;
 import com.bridgecare.inspection.models.dtos.InspeccionDTO;
 import com.bridgecare.inspection.models.entities.Componente;
 import com.bridgecare.inspection.models.entities.Inspeccion;
+import com.bridgecare.common.models.dtos.UsuarioDTO;
 import com.bridgecare.common.models.entities.Puente;
 import com.bridgecare.common.models.entities.Usuario;
 import com.bridgecare.inspection.models.entities.Reparacion;
 import com.bridgecare.inspection.repositories.InspeccionRepository;
-import com.bridgecare.common.repositories.PuenteRepository; // Se importa el repositorio de Puente
+
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +28,7 @@ public class InspeccionService {
     private InspeccionRepository inspeccionRepository;
 
     @Autowired
-    private PuenteRepository puenteRepository; // Se inyecta el repositorio de Puente
+    private RestTemplate restTemplate;
 
     @Transactional
     public Long saveInspeccion(InspeccionDTO request, Authentication authentication) {
@@ -33,16 +36,27 @@ public class InspeccionService {
             throw new IllegalStateException("Unauthorized: No valid token provided");
         }
 
-        // Extraer el email del usuario autenticado
+        // Extract user ID from JWT
         String userEmail = extractUserEmailFromAuthentication(authentication);
         System.out.println("userEmail: " + userEmail);
 
-        // Buscar el puente por ID en la base de datos
-        Optional<Puente> puenteOpt = puenteRepository.findById(request.getPuenteId());
-        if (puenteOpt.isEmpty()) {
-            throw new IllegalStateException("Puente no encontrado con ID: " + request.getPuenteId());
+        String puenteUrl = "http://localhost:8081/api/puentes/" + request.getPuenteId();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + getTokenFromAuthentication(authentication));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Puente> response = restTemplate.exchange(puenteUrl, HttpMethod.GET, entity, Puente.class);
+
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+            throw new IllegalStateException("Failed to find Puente with ID: " + request.getPuenteId());
         }
-        Puente puente = puenteOpt.get();
+
+        Puente puente = response.getBody();
+
+
 
         Inspeccion inspeccion = new Inspeccion();
         inspeccion.setPuente(puente);
@@ -110,5 +124,12 @@ public class InspeccionService {
             }
         }
         throw new IllegalStateException("Unable to extract user email from token");
+    }
+    private String getTokenFromAuthentication(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getCredentials() instanceof String) {
+            return (String) authentication.getCredentials();
+        }
+        throw new IllegalStateException("No JWT token found in authentication");
     }
 }
