@@ -11,7 +11,7 @@ public class ComponenteDTO {
     private String mantenimiento;
     private String inspEesp;
     private Integer numeroFfotos;
-    private String tipoDanio;
+    private Integer tipoDanio;
     private String danio;
     private List<ReparacionDTO> reparacion;
 
@@ -55,11 +55,11 @@ public class ComponenteDTO {
         this.numeroFfotos = numeroFfotos;
     }
 
-    public String getTipoDanio() {
+    public Integer getTipoDanio() {
         return tipoDanio;
     }
 
-    public void setTipoDanio(String tipoDanio) {
+    public void setTipoDanio(Integer tipoDanio) {
         this.tipoDanio = tipoDanio;
     }
 

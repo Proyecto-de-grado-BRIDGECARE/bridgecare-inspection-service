@@ -28,7 +28,7 @@ public class Componente {
     private Integer numeroFotos;
 
     @Column(name= "tipo_danio")
-    private String tipoDanio;
+    private Integer tipoDanio;
 
     @Column(name= "danio")
     private String danio;
@@ -88,11 +88,11 @@ public class Componente {
         this.numeroFotos = numeroFotos;
     }
 
-    public String getTipoDanio() {
+    public Integer getTipoDanio() {
         return tipoDanio;
     }
 
-    public void setTipoDanio(String tipoDanio) {
+    public void setTipoDanio(Integer tipoDanio) {
         this.tipoDanio = tipoDanio;
     }
 

@@ -18,7 +18,7 @@ public class InspeccionController {
     private InspeccionService inspeccionService;
 
     @PostMapping("/add")
-    public ResponseEntity<String> addInventario(@RequestBody InspeccionDTO request, Authentication authentication) {
+    public ResponseEntity<String> addInspeccion(@RequestBody InspeccionDTO request, Authentication authentication) {
         Long inspeccionId = inspeccionService.saveInspeccion(request, authentication);
         return ResponseEntity.ok("Inventario created with ID: " + inspeccionId);
     }

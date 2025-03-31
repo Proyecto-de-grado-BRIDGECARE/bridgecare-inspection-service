@@ -1,16 +1,16 @@
 package com.bridgecare.inspection.security.services;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.crypto.SecretKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,5 +63,15 @@ public class JwtTokenProvider {
                 .build()
                 .parseSignedClaims(token);
     }
+
+ /* Variente por si acaso
+private Jws<Claims> parseToken(String token) {
+    return Jwts.parserBuilder()
+            .setSigningKey(getKey()) // <-- CORREGIDO
+            .build()
+            .parseClaimsJws(token);  // <-- CORREGIDO
+    }
+
+ */
 }
 
