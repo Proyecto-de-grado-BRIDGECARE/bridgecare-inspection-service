@@ -33,7 +33,7 @@ public class Inspeccion {
     @OneToMany(mappedBy = "inspeccion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Componente> componentes = new ArrayList<>();
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "puente_id", nullable = false, unique = true)
     private Puente puente;
 

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface InspeccionRepository extends JpaRepository<Inspeccion,Long> {
-    Optional<Inspeccion> findByBridge(Puente puente);
+    Optional<Inspeccion> findByPuente(Puente puente);
 }
