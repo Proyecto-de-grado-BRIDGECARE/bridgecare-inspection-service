@@ -19,10 +19,10 @@ public class Reparacion {
     private Integer cantidad;
 
     @Column(name= "anio")
-    private Year anio;
+    private Integer anio;
 
     @Column(name= "costo")
-    private Integer costo;
+    private Double costo;
 
     @ManyToOne
     @JoinColumn(name = "componente_id", nullable = false)
@@ -52,19 +52,19 @@ public class Reparacion {
         this.cantidad = cantidad;
     }
 
-    public Year getAnio() {
+    public Integer getAnio() {
         return anio;
     }
 
-    public void setAnio(Year anio) {
+    public void setAnio(Integer anio) {
         this.anio = anio;
     }
 
-    public Integer getCosto() {
+    public Double getCosto() {
         return costo;
     }
 
-    public void setCosto(Integer costo) {
+    public void setCosto(Double costo) {
         this.costo = costo;
     }
 

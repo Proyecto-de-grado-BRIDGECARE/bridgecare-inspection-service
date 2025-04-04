@@ -4,7 +4,9 @@ import com.bridgecare.common.models.entities.Puente;
 import com.bridgecare.common.models.entities.Usuario;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -22,13 +24,16 @@ public class Inspeccion {
     private Integer temperatura;
 
     @Column(name="administrador")
-    private Integer administrador;
+    private String administrador;
 
     @Column(name="anio_proxima_inspeccion")
     private Integer anioProximaInspeccion;
 
     @Column(name="observaciones_generales")
-    private Integer observacionesGenerales;
+    private String observacionesGenerales;
+
+    @Column(name="fecha")
+    private LocalDate fecha;
 
     @OneToMany(mappedBy = "inspeccion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Componente> componentes = new ArrayList<>();
@@ -65,11 +70,11 @@ public class Inspeccion {
         this.temperatura = temperatura;
     }
 
-    public Integer getAdministrador() {
+    public String getAdministrador() {
         return administrador;
     }
 
-    public void setAdministrador(Integer administrador) {
+    public void setAdministrador(String administrador) {
         this.administrador = administrador;
     }
 
@@ -81,12 +86,20 @@ public class Inspeccion {
         this.anioProximaInspeccion = anioProximaInspeccion;
     }
 
-    public Integer getObservacionesGenerales() {
+    public String getObservacionesGenerales() {
         return observacionesGenerales;
     }
 
-    public void setObservacionesGenerales(Integer observacionesGenerales) {
+    public void setObservacionesGenerales(String observacionesGenerales) {
         this.observacionesGenerales = observacionesGenerales;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public List<Componente> getComponentes() {

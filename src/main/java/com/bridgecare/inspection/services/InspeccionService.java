@@ -65,6 +65,7 @@ public class InspeccionService {
         inspeccion.setAdministrador(request.getAdministrador());
         inspeccion.setAnioProximaInspeccion(request.getAnioProximaInspeccion());
         inspeccion.setObservacionesGenerales(request.getObservacionesGenerales());
+        inspeccion.setFecha(request.getFecha());
 
         // Convertir los componentes de DTO a entidad
         List<Componente> componentes = request.getComponentes().stream().map(dto -> {
@@ -103,13 +104,6 @@ public class InspeccionService {
     private Usuario mapUsuarioDTOToUsuario(UsuarioDTO usuarioDTO) {
         Usuario usuario = new Usuario();
         usuario.setId(usuarioDTO.getId());
-        usuario.setNombres(usuarioDTO.getNombres());
-        usuario.setApellidos(usuarioDTO.getApellidos());
-        usuario.setIdentificacion(usuarioDTO.getIdentificacion());
-        usuario.setTipoUsuario(usuarioDTO.getTipoUsuario());
-        usuario.setCorreo(usuarioDTO.getCorreo());
-        usuario.setMunicipio(usuarioDTO.getMunicipio());
-        usuario.setContrasenia(usuarioDTO.getContrasenia());
         return usuario;
     }
 

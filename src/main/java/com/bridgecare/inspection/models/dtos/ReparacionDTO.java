@@ -7,8 +7,8 @@ import java.time.Year;
 public class ReparacionDTO {
     private String tipo;
     private Integer cantidad;
-    private Year anio;
-    private Integer costo;
+    private Integer anio;
+    private Double costo;
 
     public String getTipo() {
         return tipo;
@@ -26,19 +26,19 @@ public class ReparacionDTO {
         this.cantidad = cantidad;
     }
 
-    public Year getAnio() {
+    public Integer getAnio() {
         return anio;
     }
 
-    public void setAnio(Year anio) {
+    public void setAnio(Integer anio) {
         this.anio = anio;
     }
 
-    public Integer getCosto() {
+    public Double getCosto() {
         return costo;
     }
 
-    public void setCosto(Integer costo) {
+    public void setCosto(Double costo) {
         this.costo = costo;
     }
 }

@@ -4,15 +4,18 @@ import com.bridgecare.common.models.dtos.PuenteDTO;
 import com.bridgecare.common.models.dtos.UsuarioDTO;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Data
 public class InspeccionDTO {
     private Integer tiempo;
     private Integer temperatura;
-    private Integer administrador;
+    private String administrador;
     private Integer anioProximaInspeccion;
-    private Integer observacionesGenerales;
+    private String observacionesGenerales;
+    private LocalDate fecha;
     private List<ComponenteDTO> componentes;
     private UsuarioDTO usuario;
     private PuenteDTO puente;
@@ -34,11 +37,11 @@ public class InspeccionDTO {
         this.temperatura = temperatura;
     }
 
-    public Integer getAdministrador() {
+    public String getAdministrador() {
         return administrador;
     }
 
-    public void setAdministrador(Integer administrador) {
+    public void setAdministrador(String administrador) {
         this.administrador = administrador;
     }
 
@@ -50,12 +53,20 @@ public class InspeccionDTO {
         this.anioProximaInspeccion = anioProximaInspeccion;
     }
 
-    public Integer getObservacionesGenerales() {
+    public String getObservacionesGenerales() {
         return observacionesGenerales;
     }
 
-    public void setObservacionesGenerales(Integer observacionesGenerales) {
+    public void setObservacionesGenerales(String observacionesGenerales) {
         this.observacionesGenerales = observacionesGenerales;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public List<ComponenteDTO> getComponentes() {
