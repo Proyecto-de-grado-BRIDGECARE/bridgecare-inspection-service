@@ -21,7 +21,7 @@ public class Componente {
     @Column(name= "mantenimiento")
     private String mantenimiento;
 
-    @Column(name= "inso_esp")
+    @Column(name= "insp_esp")
     private String inspEsp;
 
     @Column(name= "numero_fotos")

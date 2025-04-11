@@ -85,6 +85,7 @@ public class InspeccionService {
                 reparacion.setCantidad(reparacionDTO.getCantidad());
                 reparacion.setAnio(reparacionDTO.getAnio());
                 reparacion.setCosto(reparacionDTO.getCosto());
+                reparacion.setComponente(componente);
                 return reparacion;
             }).collect(Collectors.toList());
 
