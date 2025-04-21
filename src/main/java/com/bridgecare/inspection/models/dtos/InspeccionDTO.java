@@ -2,11 +2,11 @@ package com.bridgecare.inspection.models.dtos;
 
 import com.bridgecare.common.models.dtos.PuenteDTO;
 import com.bridgecare.common.models.dtos.UsuarioDTO;
-import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class InspeccionDTO {

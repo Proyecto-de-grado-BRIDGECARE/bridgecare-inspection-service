@@ -1,8 +1,8 @@
 package com.bridgecare.inspection.models.dtos;
-import lombok.Data;
 
 import java.util.List;
 
+import lombok.Data;
 
 @Data
 public class ComponenteDTO {

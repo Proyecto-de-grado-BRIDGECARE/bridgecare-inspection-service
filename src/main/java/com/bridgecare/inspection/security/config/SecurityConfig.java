@@ -10,7 +10,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.bridgecare.inspection.security.services.JwtAuthenticationFilter;
 import com.bridgecare.inspection.security.services.JwtTokenProvider;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

@@ -1,7 +1,6 @@
 package com.bridgecare.inspection.models.dtos;
-import lombok.Data;
 
-import java.time.Year;
+import lombok.Data;
 
 @Data
 public class ReparacionDTO {
@@ -42,4 +41,3 @@ public class ReparacionDTO {
         this.costo = costo;
     }
 }
-
