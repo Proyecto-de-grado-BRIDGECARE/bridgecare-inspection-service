@@ -1,17 +1,21 @@
 package com.bridgecare.inspection.services;
 
+import com.bridgecare.inspection.models.dtos.ComponenteDTO;
 import com.bridgecare.inspection.models.dtos.InspeccionDTO;
+import com.bridgecare.inspection.models.dtos.ReparacionDTO;
 import com.bridgecare.inspection.models.entities.Componente;
 import com.bridgecare.inspection.models.entities.Inspeccion;
 import com.bridgecare.common.models.dtos.UsuarioDTO;
 import com.bridgecare.common.models.entities.Puente;
 import com.bridgecare.common.models.entities.Usuario;
+import com.bridgecare.common.models.dtos.PuenteDTO;
 import com.bridgecare.inspection.models.entities.Reparacion;
 import com.bridgecare.inspection.repositories.InspeccionRepository;
 
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,4 +130,83 @@ public class InspeccionService {
         }
         throw new IllegalStateException("No JWT token found in authentication");
     }
+
+    private InspeccionDTO mapToDTO(Inspeccion inspeccion) {
+        InspeccionDTO dto = new InspeccionDTO();
+
+        dto.setId(inspeccion.getId());
+        dto.setFecha(inspeccion.getFecha());
+        dto.setTiempo(inspeccion.getTiempo());
+        dto.setTemperatura(inspeccion.getTemperatura());
+        dto.setAdministrador(inspeccion.getAdministrador());
+        dto.setAnioProximaInspeccion(inspeccion.getAnioProximaInspeccion());
+        dto.setObservacionesGenerales(inspeccion.getObservacionesGenerales());
+
+        // Mapear Puente
+        PuenteDTO puenteDTO = new PuenteDTO();
+        puenteDTO.setId(inspeccion.getPuente().getId());
+        puenteDTO.setNombre(inspeccion.getPuente().getNombre());
+        dto.setPuente(puenteDTO);
+
+        // Mapear Usuario
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setId(inspeccion.getUsuario().getId());
+        usuarioDTO.setNombres(inspeccion.getUsuario().getNombres());
+        usuarioDTO.setApellidos(inspeccion.getUsuario().getApellidos());
+        dto.setUsuario(usuarioDTO);
+
+        // Mapear Componentes
+        List<ComponenteDTO> componentesDTO = inspeccion.getComponentes().stream().map(componente -> {
+            ComponenteDTO cDTO = new ComponenteDTO();
+            cDTO.setNomb(componente.getNombre());
+            cDTO.setCalificacion(componente.getCalificacion());
+            cDTO.setMantenimiento(componente.getMantenimiento());
+            cDTO.setInspEesp(componente.getInspEsp());
+            cDTO.setNumeroFfotos(componente.getNumeroFotos());
+            cDTO.setTipoDanio(componente.getTipoDanio());
+            cDTO.setDanio(componente.getDanio());
+
+            // Mapear Reparaciones dentro de cada componente
+            List<ReparacionDTO> reparacionesDTO = componente.getReparaciones().stream().map(reparacion -> {
+                ReparacionDTO rDTO = new ReparacionDTO();
+                rDTO.setTipo(reparacion.getTipo());
+                rDTO.setCantidad(reparacion.getCantidad());
+                rDTO.setAnio(reparacion.getAnio());
+                rDTO.setCosto(reparacion.getCosto());
+                return rDTO;
+            }).collect(Collectors.toList());
+
+            cDTO.setReparacion(reparacionesDTO);
+
+            return cDTO;
+        }).collect(Collectors.toList());
+
+        dto.setComponentes(componentesDTO);
+
+        return dto;
+    }
+
+
+    public InspeccionDTO getInspeccionById(Long id) {
+        Inspeccion inspeccion = inspeccionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inpeccion no encontrada con id: " + id));
+
+        return mapToDTO(inspeccion);
+    }
+
+    public List<InspeccionDTO> getInspeccionByPuenteId(Long puenteId) {
+        Puente puente = new Puente();
+        puente.setId(puenteId);
+
+        List<Inspeccion> inspecciones = inspeccionRepository.findByPuente(puente);
+
+        if (inspecciones.isEmpty()) {
+            throw new RuntimeException("No se encontró inspección para el puente con ID " + puenteId);
+        }
+
+        return inspecciones.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
 }

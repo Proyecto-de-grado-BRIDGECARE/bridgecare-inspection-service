@@ -10,6 +10,8 @@ import lombok.Data;
 
 @Data
 public class InspeccionDTO {
+
+    private Long id;
     private Integer tiempo;
     private Integer temperatura;
     private String administrador;
@@ -20,6 +22,14 @@ public class InspeccionDTO {
     private UsuarioDTO usuario;
     private PuenteDTO puente;
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Integer getTiempo() {
         return tiempo;
