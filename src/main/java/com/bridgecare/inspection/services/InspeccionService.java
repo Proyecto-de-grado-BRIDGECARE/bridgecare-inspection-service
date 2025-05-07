@@ -1,7 +1,9 @@
 package com.bridgecare.inspection.services;
 
+import com.bridgecare.inspection.config.RabbitMQConfig;
 import com.bridgecare.inspection.models.dtos.ComponenteDTO;
 import com.bridgecare.inspection.models.dtos.InspeccionDTO;
+import com.bridgecare.inspection.models.dtos.InspeccionEventDTO;
 import com.bridgecare.inspection.models.dtos.ReparacionDTO;
 import com.bridgecare.inspection.models.entities.Componente;
 import com.bridgecare.inspection.models.entities.Inspeccion;
@@ -14,7 +16,9 @@ import com.bridgecare.inspection.repositories.InspeccionRepository;
 
 import jakarta.transaction.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,10 @@ public class InspeccionService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private org.springframework.amqp.rabbit.core.RabbitTemplate rabbitTemplate;
+
 
     @Transactional
     public Long saveInspeccion(InspeccionDTO request, Authentication authentication) {
@@ -101,8 +109,30 @@ public class InspeccionService {
 
         Usuario usuario = mapUsuarioDTOToUsuario(request.getUsuario());
         inspeccion.setUsuario(usuario);
+        Long idInspeccion = inspeccionRepository.save(inspeccion).getId();
+/*
+        // Construir evento
+        InspeccionEventDTO evento = new InspeccionEventDTO();
+        evento.setInspeccionId(inspeccion.getId());
 
-        return inspeccionRepository.save(inspeccion).getId();
+        List<InspeccionEventDTO.ComponenteDTO> lista = componentes.stream().map(c -> {
+            InspeccionEventDTO.ComponenteDTO dto = new InspeccionEventDTO.ComponenteDTO();
+            dto.setNombre(c.getNombre());
+            dto.setCalificacion(c.getCalificacion().doubleValue());
+            return dto;
+        }).toList();
+
+        evento.setComponentes(lista);
+
+
+
+        // Publicar evento
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, evento);
+
+        System.out.println("Evento enviado: inspeccionId=" + inspeccion.getId());
+*/
+
+        return idInspeccion;
     }
 
     private Usuario mapUsuarioDTOToUsuario(UsuarioDTO usuarioDTO) {
@@ -110,6 +140,9 @@ public class InspeccionService {
         usuario.setId(usuarioDTO.getId());
         return usuario;
     }
+
+
+
 
     private String extractUserEmailFromAuthentication(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()
