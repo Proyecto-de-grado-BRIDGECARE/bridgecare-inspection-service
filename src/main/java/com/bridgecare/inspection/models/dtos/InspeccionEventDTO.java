@@ -1,5 +1,6 @@
 package com.bridgecare.inspection.models.dtos;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class InspeccionEventDTO {
@@ -8,12 +9,11 @@ public class InspeccionEventDTO {
 
     // getters y setters
 
-    public static class ComponenteDTO {
+    public static class ComponenteDTO implements Serializable {
+        private static final long serialVersionUID = 1L;
+
         private String nombre;
         private Double calificacion;
-
-        // getters y setters
-
 
         public String getNombre() {
             return nombre;

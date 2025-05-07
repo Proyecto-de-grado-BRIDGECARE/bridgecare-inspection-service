@@ -110,7 +110,7 @@ public class InspeccionService {
         Usuario usuario = mapUsuarioDTOToUsuario(request.getUsuario());
         inspeccion.setUsuario(usuario);
         Long idInspeccion = inspeccionRepository.save(inspeccion).getId();
-/*
+
         // Construir evento
         InspeccionEventDTO evento = new InspeccionEventDTO();
         evento.setInspeccionId(inspeccion.getId());
@@ -130,7 +130,7 @@ public class InspeccionService {
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, evento);
 
         System.out.println("Evento enviado: inspeccionId=" + inspeccion.getId());
-*/
+
 
         return idInspeccion;
     }
