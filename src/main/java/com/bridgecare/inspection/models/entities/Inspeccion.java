@@ -52,7 +52,7 @@ public class Inspeccion {
     private Puente puente;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     public Long getId() {

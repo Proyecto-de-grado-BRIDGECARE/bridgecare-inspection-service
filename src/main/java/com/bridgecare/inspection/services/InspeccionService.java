@@ -95,17 +95,24 @@ public class InspeccionService {
 
         inspeccion.setComponentes(componentes);
 
-        Usuario usuario = mapUsuarioDTOToUsuario(request.getUsuario());
-        inspeccion.setUsuario(usuario);
+        if (request.getUsuario() != null) {
+            Usuario usuario = mapUsuarioDTOToUsuario(request.getUsuario());
+            inspeccion.setUsuario(usuario);
+        } else {
+            inspeccion.setUsuario(null); // explícito
+        }
+
 
         return inspeccionRepository.save(inspeccion).getId();
     }
 
     private Usuario mapUsuarioDTOToUsuario(UsuarioDTO usuarioDTO) {
+        if (usuarioDTO == null) return null;
         Usuario usuario = new Usuario();
         usuario.setId(usuarioDTO.getId());
         return usuario;
     }
+
 
     private String extractUserEmailFromAuthentication(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()
@@ -126,4 +133,10 @@ public class InspeccionService {
         }
         throw new IllegalStateException("No JWT token found in authentication");
     }
+
+    @Transactional
+    public void deleteByPuenteId(Long puenteId) {
+        inspeccionRepository.deleteByPuenteId(puenteId);
+    }
+
 }
