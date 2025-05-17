@@ -118,7 +118,8 @@ public class InspeccionService {
         List<InspeccionEventDTO.ComponenteDTO> lista = componentes.stream().map(c -> {
             InspeccionEventDTO.ComponenteDTO dto = new InspeccionEventDTO.ComponenteDTO();
             dto.setNombre(c.getNombre());
-            dto.setCalificacion(c.getCalificacion().doubleValue());
+            dto.setCalificacion(c.getCalificacion());
+            dto.setTipoDanio(c.getTipoDanio());
             return dto;
         }).toList();
 

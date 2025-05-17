@@ -13,7 +13,9 @@ public class InspeccionEventDTO {
         private static final long serialVersionUID = 1L;
 
         private String nombre;
-        private Double calificacion;
+        private Integer calificacion;
+
+        private Integer tipoDanio;
 
         public String getNombre() {
             return nombre;
@@ -23,12 +25,20 @@ public class InspeccionEventDTO {
             this.nombre = nombre;
         }
 
-        public Double getCalificacion() {
+        public Integer getCalificacion() {
             return calificacion;
         }
 
-        public void setCalificacion(Double calificacion) {
+        public void setCalificacion(Integer calificacion) {
             this.calificacion = calificacion;
+        }
+
+        public Integer getTipoDanio() {
+            return tipoDanio;
+        }
+
+        public void setTipoDanio(Integer tipoDanio) {
+            this.tipoDanio = tipoDanio;
         }
     }
 
