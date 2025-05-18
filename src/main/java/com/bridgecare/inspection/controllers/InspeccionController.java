@@ -24,7 +24,7 @@ public class InspeccionController {
     @PostMapping("/add")
     public ResponseEntity<String> addInspeccion(@RequestBody InspeccionDTO request, Authentication authentication) throws IOException {
         Long inspeccionId = inspeccionService.saveInspeccion(request, authentication);
-        return ResponseEntity.ok("Inspeccion created with ID: " + inspeccionId);
+        return ResponseEntity.ok("{\"message\": \"Inspeccion created with ID: " + inspeccionId + "\"}");
     }
     
     @DeleteMapping("/delete/by-puente/{puenteId}")

@@ -118,8 +118,15 @@ public class InspeccionService {
             componente.setReparaciones(reparaciones);
 
             // Handle image paths
-            Path oldImagePath = Paths.get(storagePath, puente.getId().toString(), request.getInspeccionUuid(),
-                    componenteDTO.getComponenteUuid());
+            Path oldImagePath;
+            if (puente != null) {
+                oldImagePath = Paths.get(storagePath, puente.getId().toString(), request.getInspeccionUuid(),
+                        componenteDTO.getComponenteUuid());
+            } else {
+                // Handle the null case (e.g., throw an exception, use a default path, or skip
+                // the operation)
+                throw new IllegalStateException("Puente is null, cannot construct image path");
+            }
             List<String> updatedImagePaths = new ArrayList<>();
 
             // Save Componente
@@ -140,7 +147,8 @@ public class InspeccionService {
                             Files.move(imagePath, targetPath);
                             updatedImagePaths.add(targetPath.toString());
                         } catch (IOException e) {
-                            System.out.println("Failed to move image from " + imagePath + " to " + targetPath + ", skipping deletion");
+                            System.out.println("Failed to move image from " + imagePath + " to " + targetPath
+                                    + ", skipping deletion");
                         }
                     });
                 }
@@ -161,7 +169,14 @@ public class InspeccionService {
         }
 
         // Delete inspeccion UUID directory if empty
-        Path inspeccionPath = Paths.get(storagePath, puente.getId().toString(), request.getInspeccionUuid());
+        Path inspeccionPath;
+        if (puente != null) {
+            inspeccionPath = Paths.get(storagePath, puente.getId().toString(), request.getInspeccionUuid());
+        } else {
+            // Handle the null case (e.g., throw an exception, use a default path, or skip
+            // the operation)
+            throw new IllegalStateException("Puente is null, cannot construct image path");
+        }
         try (Stream<Path> files = Files.list(inspeccionPath)) {
             if (files.findAny().isEmpty()) {
                 Files.deleteIfExists(inspeccionPath);
