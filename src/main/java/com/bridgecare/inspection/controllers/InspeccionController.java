@@ -1,5 +1,7 @@
 package com.bridgecare.inspection.controllers;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,15 +22,14 @@ public class InspeccionController {
     private InspeccionService inspeccionService;
 
     @PostMapping("/add")
-    public ResponseEntity<String> addInspeccion(@RequestBody InspeccionDTO request, Authentication authentication) {
+    public ResponseEntity<String> addInspeccion(@RequestBody InspeccionDTO request, Authentication authentication) throws IOException {
         Long inspeccionId = inspeccionService.saveInspeccion(request, authentication);
         return ResponseEntity.ok("Inspeccion created with ID: " + inspeccionId);
     }
+    
     @DeleteMapping("/delete/by-puente/{puenteId}")
     public ResponseEntity<String> deleteByPuente(@PathVariable Long puenteId) {
-        System.out.println("🛠️ Recibida petición DELETE de inspeccion por puenteId: " + puenteId);
         inspeccionService.deleteByPuenteId(puenteId);
         return ResponseEntity.ok("Inspección(es) eliminada(s)");
     }
-
 }

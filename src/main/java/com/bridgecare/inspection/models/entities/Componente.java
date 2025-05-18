@@ -3,6 +3,10 @@ package com.bridgecare.inspection.models.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.Type;
+
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +53,10 @@ public class Componente {
 
     @OneToMany(mappedBy = "componente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reparacion> reparaciones = new ArrayList<>();
+
+    @Type(JsonBinaryType.class)
+    @Column(name = "image_paths", columnDefinition = "jsonb")
+    private List<String> imagePaths = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -128,5 +136,13 @@ public class Componente {
 
     public void setReparaciones(List<Reparacion> reparaciones) {
         this.reparaciones = reparaciones;
+    }
+
+    public List<String> getImagePaths() {
+        return imagePaths;
+    }
+
+    public void setImagePaths(List<String> imagePaths) {
+        this.imagePaths = imagePaths;
     }
 }

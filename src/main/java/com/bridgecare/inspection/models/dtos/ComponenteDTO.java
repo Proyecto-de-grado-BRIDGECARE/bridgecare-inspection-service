@@ -2,6 +2,8 @@ package com.bridgecare.inspection.models.dtos;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
@@ -14,6 +16,8 @@ public class ComponenteDTO {
     private Integer tipoDanio;
     private String danio;
     private List<ReparacionDTO> reparacion;
+    @JsonProperty("componente_uuid")
+    private String componenteUuid;
 
     public String getNomb() {
         return nomb;
@@ -77,5 +81,13 @@ public class ComponenteDTO {
 
     public void setReparacion(List<ReparacionDTO> reparacion) {
         this.reparacion = reparacion;
+    }
+
+    public String getComponenteUuid() {
+        return componenteUuid;
+    }
+
+    public void setComponenteUuid(String componenteUuid) {
+        this.componenteUuid = componenteUuid;
     }
 }
