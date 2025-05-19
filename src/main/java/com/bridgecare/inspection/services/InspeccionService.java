@@ -51,7 +51,7 @@ public class InspeccionService {
         String userEmail = extractUserEmailFromAuthentication(authentication);
         System.out.println("userEmail: " + userEmail);
 
-        String puenteUrl = "http://localhost:8081/api/puentes/" + request.getPuente().getId();
+        String puenteUrl = "http://bridge-service:8081/api/puentes/" + request.getPuente().getId();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getTokenFromAuthentication(authentication));

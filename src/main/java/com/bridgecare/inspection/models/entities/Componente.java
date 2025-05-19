@@ -54,9 +54,12 @@ public class Componente {
     @OneToMany(mappedBy = "componente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reparacion> reparaciones = new ArrayList<>();
 
+    /*
     @Type(JsonBinaryType.class)
     @Column(name = "image_paths", columnDefinition = "jsonb")
     private List<String> imagePaths = new ArrayList<>();
+
+     */
 
     public Long getId() {
         return id;
@@ -137,7 +140,7 @@ public class Componente {
     public void setReparaciones(List<Reparacion> reparaciones) {
         this.reparaciones = reparaciones;
     }
-
+/*
     public List<String> getImagePaths() {
         return imagePaths;
     }
@@ -145,4 +148,6 @@ public class Componente {
     public void setImagePaths(List<String> imagePaths) {
         this.imagePaths = imagePaths;
     }
+
+ */
 }
