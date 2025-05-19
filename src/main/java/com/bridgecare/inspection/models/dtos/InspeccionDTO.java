@@ -2,7 +2,6 @@ package com.bridgecare.inspection.models.dtos;
 
 import com.bridgecare.common.models.dtos.PuenteDTO;
 import com.bridgecare.common.models.dtos.UsuarioDTO;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,8 +10,8 @@ import lombok.Data;
 
 @Data
 public class InspeccionDTO {
-    @JsonProperty("inspeccion_uuid")
-    private String inspeccionUuid;
+
+    private Long id;
     private Integer tiempo;
     private Integer temperatura;
     private String administrador;
@@ -23,12 +22,13 @@ public class InspeccionDTO {
     private UsuarioDTO usuario;
     private PuenteDTO puente;
 
-    public String getInspeccionUuid() {
-        return inspeccionUuid;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setInspeccionUuid(String inspeccionUuid) {
-        this.inspeccionUuid = inspeccionUuid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Integer getTiempo() {
