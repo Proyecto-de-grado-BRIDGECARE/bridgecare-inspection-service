@@ -16,13 +16,16 @@ import com.bridgecare.inspection.repositories.InspeccionRepository;
 
 import jakarta.transaction.Transactional;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,8 @@ public class InspeccionService {
     @Autowired
     private org.springframework.amqp.rabbit.core.RabbitTemplate rabbitTemplate;
 
+    @Value("${file.storage.path}")
+    private String storagePath;
 
     @Transactional
     public Long saveInspeccion(InspeccionDTO request, Authentication authentication) {
@@ -66,8 +71,6 @@ public class InspeccionService {
         }
 
         Puente puente = response.getBody();
-
-
 
         Inspeccion inspeccion = new Inspeccion();
         inspeccion.setPuente(puente);
@@ -125,15 +128,34 @@ public class InspeccionService {
 
         evento.setComponentes(lista);
 
-
-
         // Publicar evento
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, evento);
 
         System.out.println("Evento enviado: inspeccionId=" + inspeccion.getId());
 
-
         return idInspeccion;
+    }
+
+    @Transactional
+    public void saveImageChunk(String parentFormId, String formUuid, String sectionUuid, String imageUuid, int chunk,
+            int total, byte[] chunkData) throws IOException {
+        Path tempDir = Paths.get(storagePath, parentFormId, formUuid, sectionUuid, "temp");
+        Path chunkPath = tempDir.resolve(imageUuid + ".part" + chunk);
+        Files.createDirectories(tempDir);
+        Files.write(chunkPath, chunkData);
+
+        if (chunk + 1 == total) {
+            Path finalPath = Paths.get(storagePath, parentFormId, formUuid, sectionUuid, imageUuid + ".jpg");
+            Files.createDirectories(finalPath.getParent());
+            try (var output = Files.newOutputStream(finalPath, StandardOpenOption.CREATE)) {
+                for (int i = 0; i < total; i++) {
+                    Path partPath = tempDir.resolve(imageUuid + ".part" + i);
+                    output.write(Files.readAllBytes(partPath));
+                    Files.deleteIfExists(partPath);
+                }
+            }
+            Files.deleteIfExists(tempDir);
+        }
     }
 
     private Usuario mapUsuarioDTOToUsuario(UsuarioDTO usuarioDTO) {
@@ -141,9 +163,6 @@ public class InspeccionService {
         usuario.setId(usuarioDTO.getId());
         return usuario;
     }
-
-
-
 
     private String extractUserEmailFromAuthentication(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()
