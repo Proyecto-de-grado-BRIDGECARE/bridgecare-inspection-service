@@ -23,17 +23,4 @@ public class InspeccionController {
         return ResponseEntity.ok("Inspeccion creada con ID: " + inspeccionId);
     }
 
-    @Transactional(readOnly=true)
-    @GetMapping("/{id}")
-    public ResponseEntity<InspeccionDTO> getInspeccionById(@PathVariable Long id){
-        InspeccionDTO dto = inspeccionService.getInspeccionById(id);
-        return ResponseEntity.ok(dto);
-    }
-
-    @Transactional(readOnly=true)
-    @GetMapping("/puente/{puenteId}")
-    public ResponseEntity<List<InspeccionDTO>> getByPuenteId(@PathVariable Long puenteId) {
-        return ResponseEntity.ok(inspeccionService.getInspeccionByPuenteId(puenteId));
-    }
-
 }
