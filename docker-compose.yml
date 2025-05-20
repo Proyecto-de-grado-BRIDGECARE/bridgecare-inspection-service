@@ -1,5 +1,7 @@
 services:
   inspection-service:
+    container_name: inspection-service
+    image: inspection-service
     build:
       context: .
       args:
