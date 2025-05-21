@@ -114,6 +114,7 @@ public class InspeccionService {
         // Construir evento
         InspeccionEventDTO evento = new InspeccionEventDTO();
         evento.setInspeccionId(inspeccion.getId());
+        evento.setEmail(userEmail);
 
         List<InspeccionEventDTO.ComponenteDTO> lista = componentes.stream().map(c -> {
             InspeccionEventDTO.ComponenteDTO dto = new InspeccionEventDTO.ComponenteDTO();
