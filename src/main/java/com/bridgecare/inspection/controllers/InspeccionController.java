@@ -1,19 +1,16 @@
 package com.bridgecare.inspection.controllers;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.bridgecare.inspection.models.dtos.InspeccionDTO;
 import com.bridgecare.inspection.services.InspeccionService;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/inspeccion")
@@ -38,5 +35,18 @@ public class InspeccionController {
             @RequestBody byte[] chunkData) throws IOException {
         inspeccionService.saveImageChunk(parentFormId, formUuid, sectionUuid, imageUuid, chunk, total, chunkData);
         return ResponseEntity.ok("Chunk " + chunk + " uploaded successfully");
+    }
+
+    @Transactional(readOnly=true)
+    @GetMapping("/{id}")
+    public ResponseEntity<InspeccionDTO> getInspeccionById(@PathVariable Long id){
+        InspeccionDTO dto = inspeccionService.getInspeccionById(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @Transactional(readOnly=true)
+    @GetMapping("/puente/{puenteId}")
+    public ResponseEntity<List<InspeccionDTO>> getByPuenteId(@PathVariable Long puenteId) {
+        return ResponseEntity.ok(inspeccionService.getInspeccionByPuenteId(puenteId));
     }
 }
