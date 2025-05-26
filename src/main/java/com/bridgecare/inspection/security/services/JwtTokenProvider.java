@@ -64,13 +64,13 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token);
     }
 
- /* Variente por si acaso
-private Jws<Claims> parseToken(String token) {
-    return Jwts.parserBuilder()
-            .setSigningKey(getKey()) // <-- CORREGIDO
-            .build()
-            .parseClaimsJws(token);  // <-- CORREGIDO
-    }
+    /* Variente por si acaso
+    private Jws<Claims> parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getKey()) // <-- CORREGIDO
+                .build()
+                .parseClaimsJws(token);  // <-- CORREGIDO
+        }
 
- */
+    */
 }

@@ -176,6 +176,7 @@ public class InspeccionService {
         }
         throw new IllegalStateException("Unable to extract user email from token");
     }
+
     private String getTokenFromAuthentication(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()
                 && authentication.getCredentials() instanceof String) {
@@ -239,7 +240,6 @@ public class InspeccionService {
         return dto;
     }
 
-
     public InspeccionDTO getInspeccionById(Long id) {
         Inspeccion inspeccion = inspeccionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inpeccion no encontrada con id: " + id));
@@ -261,5 +261,4 @@ public class InspeccionService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
-
 }
