@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgecare.inspection.models.dtos.InspeccionDTO;
 import com.bridgecare.inspection.services.InspeccionService;
@@ -18,10 +19,17 @@ public class InspeccionController {
     @Autowired
     private InspeccionService inspeccionService;
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addInspeccion(@RequestBody InspeccionDTO request, Authentication authentication) {
-        Long inspeccionId = inspeccionService.saveInspeccion(request, authentication);
-        return ResponseEntity.ok("Inspeccion creada con ID: " + inspeccionId);
+        @PostMapping(value = "/add", consumes = {"multipart/form-data"})
+    public ResponseEntity<String> addInspeccion(
+            @RequestPart("inspeccion") InspeccionDTO request,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+            Authentication authentication) {
+        try {
+            Long inspeccionId = inspeccionService.saveInspeccion(request, images, authentication);
+            return ResponseEntity.ok("Inspeccion creada con ID: " + inspeccionId);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error al guardar imágenes: " + e.getMessage());
+        }
     }
 
     @PostMapping("/image/upload/{parentFormId}/{formUuid}/{sectionUuid}/{imageUuid}")

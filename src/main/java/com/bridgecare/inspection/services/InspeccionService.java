@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,7 @@ import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class InspeccionService {
@@ -46,32 +48,31 @@ public class InspeccionService {
     @Value("${file.storage.path}")
     private String storagePath;
 
-    @Transactional
-    public Long saveInspeccion(InspeccionDTO request, Authentication authentication) {
+    public Long saveInspeccion(InspeccionDTO request, List<MultipartFile> images, Authentication authentication) throws IOException {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("Unauthorized: No valid token provided");
         }
-
+    
         // Extract user ID from JWT
         String userEmail = extractUserEmailFromAuthentication(authentication);
         System.out.println("userEmail: " + userEmail);
-
+    
         String puenteUrl = "http://bridge-service:8081/api/puentes/" + request.getPuente().getId();
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getTokenFromAuthentication(authentication));
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         HttpEntity<Void> entity = new HttpEntity<>(headers);
-
         ResponseEntity<Puente> response = restTemplate.exchange(puenteUrl, HttpMethod.GET, entity, Puente.class);
-
+    
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
             throw new IllegalStateException("Failed to find Puente with ID: " + request.getPuente().getId());
         }
-
+    
         Puente puente = response.getBody();
-
+        if (puente == null) {
+            throw new IllegalStateException("Puente data is null for ID: " + request.getPuente().getId());
+        }
+    
         Inspeccion inspeccion = new Inspeccion();
         inspeccion.setPuente(puente);
         inspeccion.setTiempo(request.getTiempo());
@@ -80,7 +81,7 @@ public class InspeccionService {
         inspeccion.setAnioProximaInspeccion(request.getAnioProximaInspeccion());
         inspeccion.setObservacionesGenerales(request.getObservacionesGenerales());
         inspeccion.setFecha(request.getFecha());
-
+    
         // Convertir los componentes de DTO a entidad
         List<Componente> componentes = request.getComponentes().stream().map(dto -> {
             Componente componente = new Componente();
@@ -91,7 +92,7 @@ public class InspeccionService {
             componente.setNumeroFotos(dto.getNumeroFfotos());
             componente.setTipoDanio(dto.getTipoDanio());
             componente.setDanio(dto.getDanio());
-
+    
             // Convertir la lista de ReparacionDTO a Reparacion
             List<Reparacion> reparaciones = dto.getReparacion().stream().map(reparacionDTO -> {
                 Reparacion reparacion = new Reparacion();
@@ -102,22 +103,37 @@ public class InspeccionService {
                 reparacion.setComponente(componente);
                 return reparacion;
             }).collect(Collectors.toList());
-
-            componente.setReparaciones(reparaciones); // Asignar la lista convertida
-            componente.setInspeccion(inspeccion); // Asignar inspección al componente
+    
+            componente.setReparaciones(reparaciones);
+            componente.setInspeccion(inspeccion);
             return componente;
         }).collect(Collectors.toList());
-
+    
         inspeccion.setComponentes(componentes);
-
         Usuario usuario = mapUsuarioDTOToUsuario(request.getUsuario());
         inspeccion.setUsuario(usuario);
         Long idInspeccion = inspeccionRepository.save(inspeccion).getId();
-
+    
+        // Save images if provided
+        if (images != null && !images.isEmpty()) {
+            for (Componente componente : componentes) {
+                Path dir = Paths.get("/srv/bridgecare/images/" + puente.getId() + "/" + idInspeccion + "/" + componente.getId());
+                Files.createDirectories(dir);
+                List<String> imagePaths = new ArrayList<>();
+                for (MultipartFile image : images) {
+                    String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                    Path filePath = dir.resolve(fileName);
+                    Files.write(filePath, image.getBytes());
+                    imagePaths.add(filePath.toString());
+                }
+                componente.setImagePaths(imagePaths);
+            }
+            inspeccionRepository.save(inspeccion); // Update with image paths
+        }
+    
         // Construir evento
         InspeccionEventDTO evento = new InspeccionEventDTO();
         evento.setInspeccionId(inspeccion.getId());
-
         List<InspeccionEventDTO.ComponenteDTO> lista = componentes.stream().map(c -> {
             InspeccionEventDTO.ComponenteDTO dto = new InspeccionEventDTO.ComponenteDTO();
             dto.setNombre(c.getNombre());
@@ -125,14 +141,12 @@ public class InspeccionService {
             dto.setTipoDanio(c.getTipoDanio());
             return dto;
         }).toList();
-
         evento.setComponentes(lista);
-
+    
         // Publicar evento
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, evento);
-
         System.out.println("Evento enviado: inspeccionId=" + inspeccion.getId());
-
+    
         return idInspeccion;
     }
 
