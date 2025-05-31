@@ -20,6 +20,12 @@ import java.util.List;
 public class InspeccionController {
     @Autowired
     private InspeccionService inspeccionService;
+    private final ObjectMapper objectMapper;
+
+    public InspeccionController(ObjectMapper objectMapper, InspeccionService inspeccionService) {
+        this.objectMapper = objectMapper;
+        this.inspeccionService = inspeccionService;
+    }
 
     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addInspeccion(
@@ -27,8 +33,7 @@ public class InspeccionController {
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             Authentication authentication) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            InspeccionDTO request = mapper.readValue(inspeccionJson, InspeccionDTO.class);
+            InspeccionDTO request = objectMapper.readValue(inspeccionJson, InspeccionDTO.class);
             Long inspeccionId = inspeccionService.saveInspeccion(request, images, authentication);
             return ResponseEntity.ok("Inspeccion creada con ID: " + inspeccionId);
         } catch (IOException e) {
