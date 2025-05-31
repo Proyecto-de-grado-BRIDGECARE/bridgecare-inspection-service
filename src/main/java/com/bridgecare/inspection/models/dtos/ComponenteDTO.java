@@ -1,5 +1,6 @@
 package com.bridgecare.inspection.models.dtos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,6 +17,8 @@ public class ComponenteDTO {
     private Integer tipoDanio;
     private String danio;
     private List<ReparacionDTO> reparacion;
+    @JsonProperty("imagenUrls")
+    private List<String> imagePaths = new ArrayList<>();
     @JsonProperty("componente_uuid")
     private String componenteUuid;
 
@@ -89,5 +92,13 @@ public class ComponenteDTO {
 
     public void setComponenteUuid(String componenteUuid) {
         this.componenteUuid = componenteUuid;
+    }
+
+    public List<String> getImagePaths() {
+        return imagePaths;
+    }
+
+    public void setImagePaths(List<String> imagePaths) {
+        this.imagePaths = imagePaths;
     }
 }
