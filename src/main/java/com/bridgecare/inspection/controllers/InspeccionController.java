@@ -2,6 +2,7 @@ package com.bridgecare.inspection.controllers;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgecare.inspection.models.dtos.InspeccionDTO;
 import com.bridgecare.inspection.services.InspeccionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,16 +21,18 @@ public class InspeccionController {
     @Autowired
     private InspeccionService inspeccionService;
 
-        @PostMapping(value = "/add", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addInspeccion(
-            @RequestPart("inspeccion") InspeccionDTO request,
+            @RequestPart("inspeccion") String inspeccionJson,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             Authentication authentication) {
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            InspeccionDTO request = mapper.readValue(inspeccionJson, InspeccionDTO.class);
             Long inspeccionId = inspeccionService.saveInspeccion(request, images, authentication);
             return ResponseEntity.ok("Inspeccion creada con ID: " + inspeccionId);
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error al guardar imágenes: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error al procesar la solicitud: " + e.getMessage());
         }
     }
 
