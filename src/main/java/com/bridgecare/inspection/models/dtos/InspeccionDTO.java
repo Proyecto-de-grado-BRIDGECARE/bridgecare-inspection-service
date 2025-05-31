@@ -2,6 +2,7 @@ package com.bridgecare.inspection.models.dtos;
 
 import com.bridgecare.common.models.dtos.PuenteDTO;
 import com.bridgecare.common.models.dtos.UsuarioDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,6 +18,7 @@ public class InspeccionDTO {
     private String administrador;
     private Integer anioProximaInspeccion;
     private String observacionesGenerales;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fecha;
     private List<ComponenteDTO> componentes;
     private UsuarioDTO usuario;
