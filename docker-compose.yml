@@ -14,6 +14,9 @@ services:
       - .env
     networks:
       - bridgecare-network
+    volumes:
+      - /srv/bridgecare/images:/srv/bridgecare/images
+    user: dan
 
 networks:
   bridgecare-network:
